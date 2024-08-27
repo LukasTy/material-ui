@@ -10,7 +10,7 @@ function generateAbsolutePaths(context) {
   const workspaceRoot = path.dirname(constants.CONFIG_PATH);
   const docsWorkspacePath = path.join(workspaceRoot, 'docs');
 
-  const nextjsBuildDir = path.join(docsWorkspacePath, '.next');
+  const nextjsBuildDir = path.join(docsWorkspacePath, '.next', 'cache');
   const digests = [path.join(workspaceRoot, 'pnpm-lock.yaml')];
 
   return { digests, nextjsBuildDir };
@@ -22,13 +22,9 @@ module.exports = {
     const { nextjsBuildDir } = generateAbsolutePaths({ constants });
     const success = await utils.cache.restore(nextjsBuildDir);
 
-    console.log("'%s' exists: %s", nextjsBuildDir, String(fse.existsSync(nextjsBuildDir)));
+    console.log("'%s' exists: %s", nextjsBuildDir, fse.existsSync(nextjsBuildDir));
 
-    console.log(
-      "Restored the cached 'docs/.next' folder at the location '%s': %s",
-      nextjsBuildDir,
-      String(success),
-    );
+    console.log("Restored the cached '%s' folder: %s", nextjsBuildDir, String(success));
   },
   async onPostBuild(context) {
     const { constants, utils } = context;
@@ -40,11 +36,7 @@ module.exports = {
       digests,
     });
 
-    console.log(
-      "Cached 'docs/.next' folder at the location '%s': %s",
-      nextjsBuildDir,
-      String(success),
-    );
+    console.log("Cached '%s' folder: %s", nextjsBuildDir, String(success));
   },
   // debug
   // based on: https://github.com/netlify-labs/netlify-plugin-debug-cache/blob/v1.0.3/index.js
